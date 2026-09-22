@@ -1,0 +1,24 @@
+name: Deploy to EC2
+
+# main 브랜치에 push가 발생할 때 실행
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: EC2 접속 및 배포 명령 실행
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/fastapi-todo-app
+            git pull origin main
+            docker compose up -d --build
+            docker image prune -f
