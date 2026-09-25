@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
@@ -80,11 +80,12 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-# 로그인 API (JWT 토큰 발급)
+# 로그인 API (Swagger Authorize 팝업과 JSON 형태 모두 지원)
 @app.post("/login", response_model=Token)
-def login(user_data: UserCreate, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == user_data.email).first()
-    if not user or not auth.verify_password(user_data.password, user.hashed_password):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # OAuth2PasswordRequestForm은 email 대신 username 필드로 값을 받아옵니다.
+    user = db.query(models.User).filter(models.User.email == form_data.username).first()
+    if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="이메일 또는 비밀번호가 올바르지 않습니다."
