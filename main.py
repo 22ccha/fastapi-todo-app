@@ -1,5 +1,6 @@
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status, OAuth2PasswordRequestForm
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
