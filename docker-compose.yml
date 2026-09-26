@@ -3,6 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
+    restart: on-failure  # DB 준비가 늦어져 실패하더라도 계속 재시도하도록 설정
     expose:
       - "8000"
     environment:
